@@ -593,15 +593,9 @@ class Model {
         this.attributes = attributes;
         this.events = events;
         this.sync = sync;
-    }
-    get on() {
-        return this.events.on;
-    }
-    get trigger() {
-        return this.events.trigger;
-    }
-    get get() {
-        return this.attributes.get;
+        this.on = this.events.on;
+        this.trigger = this.events.trigger;
+        this.get = this.attributes.get;
     }
     set(update) {
         this.attributes.set(update);
@@ -1644,7 +1638,7 @@ var _axiosErrorJsDefault = parcelHelpers.interopDefault(_axiosErrorJs);
 // temporary hotfix to avoid circular references until AxiosURLSearchParams is refactored
 var _formDataJs = require("../platform/node/classes/FormData.js");
 var _formDataJsDefault = parcelHelpers.interopDefault(_formDataJs);
-var Buffer = require("acd695f84c9040a2").Buffer;
+var Buffer = require("e514fec5a70f904e").Buffer;
 "use strict";
 /**
  * Determines if the given thing is a array or js object.
@@ -1799,15 +1793,15 @@ const predicates = (0, _utilsJsDefault.default).toFlatObject((0, _utilsJsDefault
 }
 exports.default = toFormData;
 
-},{"acd695f84c9040a2":"fCgem","../utils.js":"5By4s","../core/AxiosError.js":"3u8Tl","../platform/node/classes/FormData.js":"aFlee","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"fCgem":[function(require,module,exports) {
+},{"e514fec5a70f904e":"fCgem","../utils.js":"5By4s","../core/AxiosError.js":"3u8Tl","../platform/node/classes/FormData.js":"aFlee","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"fCgem":[function(require,module,exports) {
 /*!
  * The buffer module from node.js, for the browser.
  *
  * @author   Feross Aboukhadijeh <https://feross.org>
  * @license  MIT
  */ /* eslint-disable no-proto */ "use strict";
-var base64 = require("196de295ee71a711");
-var ieee754 = require("8c6e1b15e4f7222");
+var base64 = require("9f52d669ced5fade");
+var ieee754 = require("8e120d3b0f89f011");
 var customInspectSymbol = typeof Symbol === "function" && typeof Symbol["for"] === "function" // eslint-disable-line dot-notation
  ? Symbol["for"]("nodejs.util.inspect.custom") // eslint-disable-line dot-notation
  : null;
@@ -3029,7 +3023,7 @@ var hexSliceLookupTable = function() {
     return table;
 }();
 
-},{"196de295ee71a711":"eIiSV","8c6e1b15e4f7222":"cO95r"}],"eIiSV":[function(require,module,exports) {
+},{"9f52d669ced5fade":"eIiSV","8e120d3b0f89f011":"cO95r"}],"eIiSV":[function(require,module,exports) {
 "use strict";
 exports.byteLength = byteLength;
 exports.toByteArray = toByteArray;
