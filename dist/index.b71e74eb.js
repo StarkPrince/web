@@ -558,15 +558,18 @@ function hmrAccept(bundle, id) {
 
 },{}],"h7u1C":[function(require,module,exports) {
 var _user = require("./models/User");
+var _userForm = require("./views/UserForm");
 const user = (0, _user.User).buildUser({
-    id: 1
+    name: "NAME",
+    age: 20
 });
-user.on("change", ()=>{
-    console.log(user);
-});
-user.fetch();
+const root = document.getElementById("root");
+if (root) {
+    const userForm = new (0, _userForm.UserForm)(root, user);
+    userForm.render();
+} else throw new Error("Root element not found");
 
-},{"./models/User":"4rcHn"}],"4rcHn":[function(require,module,exports) {
+},{"./models/User":"4rcHn","./views/UserForm":"gXSLD"}],"4rcHn":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "User", ()=>User);
@@ -574,17 +577,29 @@ var _model = require("./Model");
 var _attributes = require("./Attributes");
 var _apiSync = require("./ApiSync");
 var _eventing = require("./Eventing");
+var _collection = require("./Collection");
 const rootUrl = "http://localhost:3000/users";
 class User extends (0, _model.Model) {
     static buildUser(attrs) {
         return new User(new (0, _attributes.Attributes)(attrs), new (0, _eventing.Eventing)(), new (0, _apiSync.ApiSync)(rootUrl));
     }
-    isAdminUser() {
-        return this.get("id") === 1;
+    static buildUserCollection() {
+        return new (0, _collection.Collection)(rootUrl, (json)=>User.buildUser(json));
+    }
+    setRandomAge() {
+        const age = Math.round(Math.random() * 100);
+        this.set({
+            age
+        });
+    }
+    setName(name) {
+        this.set({
+            name
+        });
     }
 }
 
-},{"./Model":"f033k","./Attributes":"6Bbds","./ApiSync":"3wylh","./Eventing":"7459s","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"f033k":[function(require,module,exports) {
+},{"./Model":"f033k","./Attributes":"6Bbds","./ApiSync":"3wylh","./Eventing":"7459s","./Collection":"dD11O","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"f033k":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "Model", ()=>Model);
@@ -1638,7 +1653,7 @@ var _axiosErrorJsDefault = parcelHelpers.interopDefault(_axiosErrorJs);
 // temporary hotfix to avoid circular references until AxiosURLSearchParams is refactored
 var _formDataJs = require("../platform/node/classes/FormData.js");
 var _formDataJsDefault = parcelHelpers.interopDefault(_formDataJs);
-var Buffer = require("e514fec5a70f904e").Buffer;
+var Buffer = require("acd695f84c9040a2").Buffer;
 "use strict";
 /**
  * Determines if the given thing is a array or js object.
@@ -1793,15 +1808,15 @@ const predicates = (0, _utilsJsDefault.default).toFlatObject((0, _utilsJsDefault
 }
 exports.default = toFormData;
 
-},{"e514fec5a70f904e":"fCgem","../utils.js":"5By4s","../core/AxiosError.js":"3u8Tl","../platform/node/classes/FormData.js":"aFlee","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"fCgem":[function(require,module,exports) {
+},{"acd695f84c9040a2":"fCgem","../utils.js":"5By4s","../core/AxiosError.js":"3u8Tl","../platform/node/classes/FormData.js":"aFlee","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"fCgem":[function(require,module,exports) {
 /*!
  * The buffer module from node.js, for the browser.
  *
  * @author   Feross Aboukhadijeh <https://feross.org>
  * @license  MIT
  */ /* eslint-disable no-proto */ "use strict";
-var base64 = require("9f52d669ced5fade");
-var ieee754 = require("8e120d3b0f89f011");
+var base64 = require("196de295ee71a711");
+var ieee754 = require("8c6e1b15e4f7222");
 var customInspectSymbol = typeof Symbol === "function" && typeof Symbol["for"] === "function" // eslint-disable-line dot-notation
  ? Symbol["for"]("nodejs.util.inspect.custom") // eslint-disable-line dot-notation
  : null;
@@ -3023,7 +3038,7 @@ var hexSliceLookupTable = function() {
     return table;
 }();
 
-},{"9f52d669ced5fade":"eIiSV","8e120d3b0f89f011":"cO95r"}],"eIiSV":[function(require,module,exports) {
+},{"196de295ee71a711":"eIiSV","8c6e1b15e4f7222":"cO95r"}],"eIiSV":[function(require,module,exports) {
 "use strict";
 exports.byteLength = byteLength;
 exports.toByteArray = toByteArray;
@@ -4835,6 +4850,108 @@ class Eventing {
             callback();
         });
     };
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dD11O":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Collection", ()=>Collection);
+var _eventing = require("./Eventing");
+var _axios = require("axios");
+var _axiosDefault = parcelHelpers.interopDefault(_axios);
+class Collection {
+    constructor(rootUrl, deserialize){
+        this.rootUrl = rootUrl;
+        this.deserialize = deserialize;
+        this.models = [];
+        this.events = new (0, _eventing.Eventing)();
+    }
+    get on() {
+        return this.events.on;
+    }
+    get trigger() {
+        return this.events.trigger;
+    }
+    fetch() {
+        (0, _axiosDefault.default).get(this.rootUrl).then((response)=>{
+            response.data.forEach((value)=>{
+                this.models.push(this.deserialize(value));
+            });
+            this.trigger("change");
+        });
+    }
+}
+
+},{"./Eventing":"7459s","axios":"jo6P5","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gXSLD":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "UserForm", ()=>UserForm);
+class UserForm {
+    constructor(parent, model){
+        this.parent = parent;
+        this.model = model;
+        this.onSetAgeClick = ()=>{
+            this.model.setRandomAge();
+        };
+        this.onSetNameClick = ()=>{
+            const input = this.parent.querySelector("input");
+            if (input) {
+                const name = input.value;
+                this.model.setName(name);
+            }
+        };
+        this.bindModel();
+    }
+    bindModel() {
+        this.model.on("change", ()=>{
+            this.render();
+        });
+    }
+    eventsMap() {
+        return {
+            "mouseenter:h1": this.onHeaderHover,
+            "drag:div": this.onDragDiv,
+            "click:.set-age": this.onSetAgeClick,
+            "click:.set-name": this.onSetNameClick
+        };
+    }
+    onButtonClick() {
+        console.log("button was clicked");
+    }
+    onHeaderHover() {
+        console.log("H1 was hovered over");
+    }
+    onDragDiv() {
+        console.log("Div was dragged");
+    }
+    bindEvents(fragment) {
+        const eventsMap = this.eventsMap();
+        for(let eventKey in eventsMap){
+            const [eventName, selector] = eventKey.split(":");
+            fragment.querySelectorAll(selector).forEach((element)=>{
+                element.addEventListener(eventName, eventsMap[eventKey]);
+            });
+        }
+    }
+    template() {
+        return `
+            <div>
+                <h1>User Form</h1>
+                <div>User name: ${this.model.get("name")}</div>
+                <div>User age: ${this.model.get("age")}</div>
+                <button class="set-age">Set Random Age</button>
+                <input />
+                <button class="set-name">Set Name</button>
+            </div>
+        `;
+    }
+    render() {
+        this.parent.innerHTML = "";
+        const templateElement = document.createElement("template");
+        templateElement.innerHTML = this.template();
+        this.bindEvents(templateElement.content);
+        this.parent.append(templateElement.content);
+    }
 }
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["3LmCz","h7u1C"], "h7u1C", "parcelRequire94c2")
