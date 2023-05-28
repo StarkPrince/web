@@ -559,6 +559,7 @@ function hmrAccept(bundle, id) {
 },{}],"h7u1C":[function(require,module,exports) {
 var _user = require("./models/User");
 var _userForm = require("./views/UserForm");
+var _userEdit = require("./views/UserEdit");
 const user = (0, _user.User).buildUser({
     name: "NAME",
     age: 20
@@ -566,10 +567,13 @@ const user = (0, _user.User).buildUser({
 const root = document.getElementById("root");
 if (root) {
     const userForm = new (0, _userForm.UserForm)(root, user);
-    userForm.render();
+    const userEdit = new (0, _userEdit.UserEdit)(root, user);
+    console.log("root found");
+    console.log(userEdit);
+    userEdit.render();
 } else throw new Error("Root element not found");
 
-},{"./models/User":"4rcHn","./views/UserForm":"gXSLD"}],"4rcHn":[function(require,module,exports) {
+},{"./models/User":"4rcHn","./views/UserForm":"gXSLD","./views/UserEdit":"3CihC"}],"4rcHn":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "User", ()=>User);
@@ -4966,15 +4970,48 @@ class View {
             });
         }
     }
+    mapRegions(fragment) {
+        const regionsMap = this.regionsMap();
+        for(let key in regionsMap){
+            const selector = regionsMap[key];
+            const element = fragment.querySelector(selector);
+            if (element) this.regions[key] = element;
+        }
+    }
+    onRender() {}
     render() {
         this.parent.innerHTML = "";
         const templateElement = document.createElement("template");
         templateElement.innerHTML = this.template();
         this.bindEvents(templateElement.content);
+        this.mapRegions(templateElement.content);
         this.parent.append(templateElement.content);
     }
 }
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["3LmCz","h7u1C"], "h7u1C", "parcelRequire94c2")
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"3CihC":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "UserEdit", ()=>UserEdit);
+var _view = require("./View");
+class UserEdit extends (0, _view.View) {
+    regionsMap() {
+        console.log("UserEdit.regionsMap()");
+        return {
+            userShow: ".user-show",
+            userForm: ".user-form"
+        };
+    }
+    template() {
+        return `
+            <div>
+                <div class="user-show"></div>
+                <div class="user-form"></div>
+            </div>
+        `;
+    }
+}
+
+},{"./View":"5Vo78","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["3LmCz","h7u1C"], "h7u1C", "parcelRequire94c2")
 
 //# sourceMappingURL=index.b71e74eb.js.map
