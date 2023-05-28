@@ -4,6 +4,21 @@
       "id": 1,
       "name": "Prince Raj",
       "age": 21
+    },
+    {
+      "name": "NAME",
+      "age": 20,
+      "id": 2
+    },
+    {
+      "name": "Prince Raj",
+      "age": 23,
+      "id": 3
+    },
+    {
+      "name": "Preeti Dash",
+      "age": 19,
+      "id": 4
     }
   ]
 }

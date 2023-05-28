@@ -626,6 +626,7 @@ class Model {
         });
     }
     save() {
+        console.log("insave");
         this.sync.save(this.attributes.getAll()).then((response)=>{
             this.trigger("save");
         }).catch((err)=>{
@@ -698,8 +699,9 @@ class ApiSync {
     }
     save(data) {
         const { id  } = data;
+        console.log("where am i", data);
         if (id) return (0, _axiosDefault.default).put(`${this.rootUrl}/${id}`, data);
-        else return (0, _axiosDefault.default).post("${this.rootUrl}", data);
+        else return (0, _axiosDefault.default).post(`${this.rootUrl}`, data);
     }
 }
 
@@ -4886,33 +4888,15 @@ class Collection {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "UserForm", ()=>UserForm);
-class UserForm {
-    constructor(parent, model){
-        this.parent = parent;
-        this.model = model;
-        this.onSetAgeClick = ()=>{
-            this.model.setRandomAge();
-        };
-        this.onSetNameClick = ()=>{
-            const input = this.parent.querySelector("input");
-            if (input) {
-                const name = input.value;
-                this.model.setName(name);
-            }
-        };
-        this.bindModel();
-    }
-    bindModel() {
-        this.model.on("change", ()=>{
-            this.render();
-        });
-    }
+var _view = require("./View");
+class UserForm extends (0, _view.View) {
     eventsMap() {
         return {
             "mouseenter:h1": this.onHeaderHover,
             "drag:div": this.onDragDiv,
             "click:.set-age": this.onSetAgeClick,
-            "click:.set-name": this.onSetNameClick
+            "click:.set-name": this.onSetNameClick,
+            "click:.save-model": this.onSaveClick
         };
     }
     onButtonClick() {
@@ -4924,6 +4908,55 @@ class UserForm {
     onDragDiv() {
         console.log("Div was dragged");
     }
+    onSetAgeClick = ()=>{
+        this.model.setRandomAge();
+    };
+    onSetNameClick = ()=>{
+        const input = this.parent.querySelector("input");
+        if (input) {
+            const name = input.value;
+            this.model.setName(name);
+        }
+    };
+    onSaveClick = ()=>{
+        this.model.save();
+    };
+    template() {
+        return `
+            <div>
+                <h1>User Detail</h1>
+                <div> User Name: ${this.model.get("name")} </div>
+                <div> User Age: ${this.model.get("age")} </div>
+                <button class="set-name">Set Name</button>
+                <button class="set-age">Set Random Age</button>
+                <button class="save-model">Save User</button>
+            </div>
+        `;
+    }
+}
+
+},{"./View":"5Vo78","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"5Vo78":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "View", ()=>View);
+class View {
+    constructor(parent, model){
+        this.parent = parent;
+        this.model = model;
+        this.regions = {};
+        this.bindModel();
+    }
+    eventsMap() {
+        return {};
+    }
+    regionsMap() {
+        return {};
+    }
+    bindModel() {
+        this.model.on("change", ()=>{
+            this.render();
+        });
+    }
     bindEvents(fragment) {
         const eventsMap = this.eventsMap();
         for(let eventKey in eventsMap){
@@ -4932,18 +4965,6 @@ class UserForm {
                 element.addEventListener(eventName, eventsMap[eventKey]);
             });
         }
-    }
-    template() {
-        return `
-            <div>
-                <h1>User Form</h1>
-                <div>User name: ${this.model.get("name")}</div>
-                <div>User age: ${this.model.get("age")}</div>
-                <button class="set-age">Set Random Age</button>
-                <input />
-                <button class="set-name">Set Name</button>
-            </div>
-        `;
     }
     render() {
         this.parent.innerHTML = "";

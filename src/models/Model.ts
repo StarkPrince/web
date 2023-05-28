@@ -16,7 +16,7 @@ interface Events {
   trigger(eventName: string): void;
 }
 
-interface HasId {
+export interface HasId {
   id?: number;
 }
 
@@ -52,6 +52,7 @@ export class Model<T extends HasId> {
   }
 
   save(): void {
+    console.log("insave");
     this.sync
       .save(this.attributes.getAll())
       .then((response: AxiosResponse): void => {
